@@ -1,0 +1,22 @@
+lua test.lua
+........ test file ..........
+./?.lua;/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;/usr/local/lib/lua/5.1/?.lua;/usr/local/lib/lua/5.1/?/init.lua;/usr/share/lua/5.1/?.lua;/usr/share/lua/5.1/?/init.lua
+./?.so;/usr/local/lib/lua/5.1/?.so;/usr/lib/x86_64-linux-gnu/lua/5.1/?.so;/usr/lib/lua/5.1/?.so;/usr/local/lib/lua/5.1/loadall.so
+
+
+local ldap = require "lualdap"
+print("........ test file ..........")
+print("........ Path ..........")
+print(package.path)
+print("........ CPath ..........")
+print(package.cpath)
+print("..................")
+
+
+lua -e "require(lualdap)"
+lua: (command line):1: bad argument #1 to 'require' (string expected, got nil)
+stack traceback:
+        [C]: in function 'require'
+        (command line):1: in main chunk
+        [C]: ?
+
