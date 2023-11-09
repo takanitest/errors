@@ -1,0 +1,130 @@
+--assert(ngx.get_phase() == "timer", "The world is coming to an end!")
+
+local ldap = require "lualdap"
+
+local plugin = {
+  PRIORITY = 1000, -- set the plugin priority, which determines plugin execution order
+  VERSION = "0.1", -- version in X.Y.Z format. Check hybrid-mode compatibility requirements.
+}
+
+-- handles more initialization, but AFTER the worker process has been forked/created.
+-- It runs in the 'init_worker_by_lua_block'
+function plugin:init_worker()
+
+  -- custom code here
+  kong.log.debug("saying hi from the 'init_worker' handler")
+
+end --]]
+
+-- runs in the 'ssl_certificate_by_lua_block'
+function plugin:certificate(plugin_conf)
+
+  -- your custom code here
+  kong.log.debug("saying hi from the 'certificate' handler")
+
+end 
+
+-- runs in the 'rewrite_by_lua_block'
+function plugin:rewrite(plugin_conf)
+
+  -- your custom code here
+  kong.log.debug("saying hi from the 'rewrite' handler")
+
+end
+
+
+print("Connection successful:test")
+--local server = schema.fields.ldap_server.default
+-- runs in the 'access_by_lua_block'
+function plugin:access()
+  -- your custom code here
+
+  -- Attempt to bind to the LDAP server
+
+  local conn = assert(ldap.open_simple("ldap://localhost", "cn=admin,dc=example,dc=com", "password"))
+
+  print("Connection successful:", conn)
+
+
+  -- Close the LDAP connection
+  conn:close()
+
+
+  --[[
+  -- Access the plugin's configuration parameters
+  local ldap_server = plugin_conf.ldap_server
+  local ldap_port = plugin_conf.ldap_port
+  local request_header = plugin_conf.request_header
+
+  kong.log.info("Connecting to LDAP Server: ".. ldap_server .. ":" .. ldap_port)
+
+  -- LDAP connection and search
+  local ldap = require "myp.lib.lualdap"  -- Require the luaLDAP library
+  local ldap_conn = ldap.open(ldap_server, ldap_port)
+
+  -- log an error if there is a connection failure
+  if not ldap_conn then
+    kong.log.err("Failed to connect to the LDAP server")
+    return kong.response.exit(500, "Internal Server Error")
+  end
+
+  -- Execute an LDAP search
+  local base_dn = "ou=people,dc=example,dc=com"
+  local scope = ldap.SCOPE_SUBTREE
+  local filter = "(objectClass=person)"
+  local attrs = { "cn", "mail" }
+  
+  local ldap_search_result = ldap_conn:search {
+    base = base_dn,
+    scope = scope,
+    filter = filter,
+    attrs = attrs,
+  }
+  
+  -- log an error if there is a search failure
+  if not ldap_search_result then
+    kong.log.err("LDAP search failed")
+    return kong.response.exit(500, "Internal Server Error")
+  end
+
+  ldap_conn:close() -- closing connection when done
+  --]]
+  -- end of custom code
+
+  --uncomment
+  --kong.log.inspect(plugin_conf)   -- check the logs for a pretty-printed config!
+  --kong.service.request.set_header(plugin_conf.request_header, "this is on a request")
+
+end 
+
+
+-- runs in the 'header_filter_by_lua_block'
+function plugin:header_filter(plugin_conf)
+
+  -- your custom code here, for example;
+  kong.response.set_header(plugin_conf.response_header, "this is on the response")
+
+end --]]
+
+
+--[[ runs in the 'body_filter_by_lua_block'
+function plugin:body_filter(plugin_conf)
+
+  -- your custom code here
+  kong.log.debug("saying hi from the 'body_filter' handler")
+
+end --]]
+
+
+--[[ runs in the 'log_by_lua_block'
+function plugin:log(plugin_conf)
+
+  -- your custom code here
+  kong.log.debug("saying hi from the 'log' handler")
+
+end --]]
+
+-- Call the 'access' function
+-- plugin:access()
+-- return our plugin object
+return plugin
