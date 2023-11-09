@@ -1,0 +1,18 @@
+Hi Martijn, 
+
+I am battling with an error, which I may really use your expertise to narrow this down
+
+
+
+when running the handler using terminal and lua interpreter I did not get an error how ever when running pongo run, I get an error as below:
+
+
+
+2023/11/09 11:46:25 [error] 734#0: *149 [kong] init.lua:363 [Plugin-SAMLValidate] /kong-plugin/kong/plugins/Plugin-SAMLValidate/handler.lua:50: Can't contact LDAP server, client: 127.0.0.1, server: kong, request: "GET /request HTTP/1.1", host: "test1.com"
+
+
+
+  local conn = assert(ldap.open_simple("ldap://localhost", "cn=admin,dc=example,dc=com", "password"))
+
+
+
